@@ -183,26 +183,126 @@ export default function MealPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Log a Meal</CardTitle>
+            <p className="text-sm text-gray-500 mt-2">
+              Use any combination of methods below to log your meal
+            </p>
           </CardHeader>
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="manual">
-                  <PlusCircle className="w-4 h-4 mr-2" />
-                  Manual
-                </TabsTrigger>
-                <TabsTrigger value="search">
-                  <Search className="w-4 h-4 mr-2" />
-                  Search
-                </TabsTrigger>
-                <TabsTrigger value="barcode">
-                  <Barcode className="w-4 h-4 mr-2" />
-                  Barcode
-                </TabsTrigger>
-              </TabsList>
+          <CardContent className="space-y-6">
+            {/* Search Section */}
+            <div className="border rounded-lg p-4 bg-blue-50">
+              <div className="flex items-center gap-2 mb-3">
+                <Search className="w-5 h-5 text-blue-600" />
+                <h3 className="font-semibold text-blue-900">Search Food Database</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="e.g., greek yogurt"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSearch()
+                    }}
+                  />
+                  <Button onClick={handleSearch} disabled={searchLoading}>
+                    {searchLoading ? 'Searching...' : 'Search'}
+                  </Button>
+                </div>
 
-              {/* Manual Entry Tab */}
-              <TabsContent value="manual" className="space-y-4">
+                {searchResults.length > 0 && (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {searchResults.map((product) => (
+                      <button
+                        key={product.code}
+                        onClick={() => selectSearchProduct(product)}
+                        className={`w-full p-3 border rounded-lg text-left hover:bg-white transition-colors ${
+                          selectedProduct?.code === product.code ? 'border-green-500 bg-white' : 'bg-white'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          {product.image_small_url && (
+                            <img
+                              src={product.image_small_url}
+                              alt={product.product_name}
+                              className="w-12 h-12 object-cover rounded"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <div className="font-medium">{product.product_name}</div>
+                            {product.brands && (
+                              <div className="text-sm text-gray-500">{product.brands}</div>
+                            )}
+                          </div>
+                          {selectedProduct?.code === product.code && (
+                            <Check className="w-5 h-5 text-green-600" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Barcode Section */}
+            <div className="border rounded-lg p-4 bg-purple-50">
+              <div className="flex items-center gap-2 mb-3">
+                <Barcode className="w-5 h-5 text-purple-600" />
+                <h3 className="font-semibold text-purple-900">Barcode Lookup</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="e.g., 3017620422003"
+                    value={barcodeInput}
+                    onChange={(e) => setBarcodeInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleBarcodeSearch()
+                    }}
+                  />
+                  <Button onClick={handleBarcodeSearch} disabled={barcodeLoading}>
+                    {barcodeLoading ? 'Loading...' : 'Lookup'}
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-600">
+                  Enter barcode manually. Camera scanning coming soon!
+                </p>
+
+                {barcodeProduct && (
+                  <div className="border rounded-lg p-3 bg-white">
+                    <div className="flex items-start gap-3">
+                      {barcodeProduct.image_small_url && (
+                        <img
+                          src={barcodeProduct.image_small_url}
+                          alt={barcodeProduct.product_name}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{barcodeProduct.product_name}</h4>
+                        {barcodeProduct.brands && (
+                          <p className="text-sm text-gray-600">{barcodeProduct.brands}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {barcodeProduct === null && barcodeInput && !barcodeLoading && (
+                  <div className="text-center py-2 text-gray-500 text-sm">
+                    Product not found. Try a different barcode.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Manual Entry Section */}
+            <div className="border rounded-lg p-4 bg-green-50">
+              <div className="flex items-center gap-2 mb-3">
+                <PlusCircle className="w-5 h-5 text-green-600" />
+                <h3 className="font-semibold text-green-900">Manual Entry</h3>
+              </div>
+              <div className="space-y-3">
                 <div>
                   <Label htmlFor="dishName">Dish Name</Label>
                   <Input
@@ -243,25 +343,6 @@ export default function MealPage() {
                   </div>
                 </div>
 
-                {ingredients.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {ingredients.map((ingredient) => (
-                      <span
-                        key={ingredient}
-                        className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                      >
-                        {ingredient}
-                        <button
-                          onClick={() => removeIngredient(ingredient)}
-                          className="hover:text-green-600"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-
                 <div>
                   <Label htmlFor="notes">Notes (optional)</Label>
                   <Input
@@ -271,156 +352,31 @@ export default function MealPage() {
                     onChange={(e) => setNotes(e.target.value)}
                   />
                 </div>
-              </TabsContent>
+              </div>
+            </div>
 
-              {/* Search Tab */}
-              <TabsContent value="search" className="space-y-4">
-                <div>
-                  <Label htmlFor="search">Search Food Database</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="search"
-                      placeholder="e.g., greek yogurt"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSearch()
-                      }}
-                    />
-                    <Button onClick={handleSearch} disabled={searchLoading}>
-                      {searchLoading ? 'Searching...' : 'Search'}
-                    </Button>
-                  </div>
-                </div>
-
-                {searchResults.length > 0 && (
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {searchResults.map((product) => (
+            {/* Current Ingredients Display */}
+            {ingredients.length > 0 && (
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <Label className="mb-2 block">Current Ingredients ({ingredients.length})</Label>
+                <div className="flex flex-wrap gap-2">
+                  {ingredients.map((ingredient) => (
+                    <span
+                      key={ingredient}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+                    >
+                      {ingredient}
                       <button
-                        key={product.code}
-                        onClick={() => selectSearchProduct(product)}
-                        className={`w-full p-3 border rounded-lg text-left hover:bg-gray-50 ${
-                          selectedProduct?.code === product.code ? 'border-green-500 bg-green-50' : ''
-                        }`}
+                        onClick={() => removeIngredient(ingredient)}
+                        className="hover:text-green-600"
                       >
-                        <div className="flex items-start gap-3">
-                          {product.image_small_url && (
-                            <img
-                              src={product.image_small_url}
-                              alt={product.product_name}
-                              className="w-12 h-12 object-cover rounded"
-                            />
-                          )}
-                          <div className="flex-1">
-                            <div className="font-medium">{product.product_name}</div>
-                            {product.brands && (
-                              <div className="text-sm text-gray-500">{product.brands}</div>
-                            )}
-                          </div>
-                          {selectedProduct?.code === product.code && (
-                            <Check className="w-5 h-5 text-green-600" />
-                          )}
-                        </div>
+                        <X className="w-3 h-3" />
                       </button>
-                    ))}
-                  </div>
-                )}
-
-                {selectedProduct && ingredients.length > 0 && (
-                  <div>
-                    <Label>Detected Ingredients</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {ingredients.map((ingredient) => (
-                        <span
-                          key={ingredient}
-                          className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                        >
-                          {ingredient}
-                          <button
-                            onClick={() => removeIngredient(ingredient)}
-                            className="hover:text-green-600"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-
-              {/* Barcode Tab */}
-              <TabsContent value="barcode" className="space-y-4">
-                <div>
-                  <Label htmlFor="barcode">Enter Barcode</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="barcode"
-                      placeholder="e.g., 3017620422003"
-                      value={barcodeInput}
-                      onChange={(e) => setBarcodeInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleBarcodeSearch()
-                      }}
-                    />
-                    <Button onClick={handleBarcodeSearch} disabled={barcodeLoading}>
-                      {barcodeLoading ? 'Loading...' : 'Lookup'}
-                    </Button>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    For MVP: Enter barcode manually. Camera scanning coming soon!
-                  </p>
+                    </span>
+                  ))}
                 </div>
-
-                {barcodeProduct && (
-                  <div className="border rounded-lg p-4 bg-gray-50">
-                    <div className="flex items-start gap-3">
-                      {barcodeProduct.image_small_url && (
-                        <img
-                          src={barcodeProduct.image_small_url}
-                          alt={barcodeProduct.product_name}
-                          className="w-20 h-20 object-cover rounded"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{barcodeProduct.product_name}</h3>
-                        {barcodeProduct.brands && (
-                          <p className="text-sm text-gray-600">{barcodeProduct.brands}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {ingredients.length > 0 && (
-                      <div className="mt-4">
-                        <Label>Detected Ingredients</Label>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {ingredients.map((ingredient) => (
-                            <span
-                              key={ingredient}
-                              className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                            >
-                              {ingredient}
-                              <button
-                                onClick={() => removeIngredient(ingredient)}
-                                className="hover:text-green-600"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {barcodeProduct === null && barcodeInput && !barcodeLoading && (
-                  <div className="text-center py-4 text-gray-500">
-                    Product not found. Try a different barcode or use manual entry.
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+              </div>
+            )}
 
             {/* Irritant Tags Display */}
             {irritantTags.length > 0 && (

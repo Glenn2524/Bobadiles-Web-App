@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String   @id @default(cuid())
+  name                 String
+  createdAt            DateTime @default(now())
+  preferredCheckInTime String   @default("evening") // "morning" | "evening" | "both"
+  nextAppointment      DateTime?
+  shareWithDoctor      Boolean  @default(false)
+  allowResearchUse     Boolean  @default(false)
+  meals                Meal[]
+  checkIns             CheckIn[]
+  acuteSymptoms        AcuteSymptom[]
+  bowelMovements       BowelMovement[]
+}
+
+model Meal {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  timestamp    DateTime
+  source       String   // "barcode" | "search" | "manual"
+  dishName     String
+  ingredients  String   // JSON array of strings
+  irritantTags String   // JSON array of strings
+  notes        String?
+  photoBase64  String?  // optional, for user's memory only
+  createdAt    DateTime @default(now())
+}
+
+model CheckIn {
+  id                      String   @id @default(cuid())
+  userId                  String
+  user                    User     @relation(fields: [userId], references: [id])
+  timestamp               DateTime
+  type                    String   // "morning" | "evening"
+  wellbeing               Int      // 1-10
+  energy                  Int      // 1-10
+  stress                  Int      // 1-10
+  bloating                Int      // 0-10
+  pain                    Int      // 0-10
+  sleepQuality            Int?     // 1-5 (morning only)
+  // Retrospective fields (evening only):
+  unloggedSymptomsToday   Boolean  @default(false)
+  unloggedSeverity        Int?     // 1-10 if unloggedSymptomsToday is true
+  unloggedNotes           String?
+  notes                   String?
+  createdAt               DateTime @default(now())
+}
+
+model BowelMovement {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  timestamp    DateTime
+  bristolScale Int      // 1-7
+  notes        String?
+  photoBase64  String?
+  createdAt    DateTime @default(now())
+}
+
+model AcuteSymptom {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  timestamp   DateTime
+  symptomType String   // "diarrhea" | "constipation" | "severe_pain" | "nausea" | "vomiting" | "bloating_attack" | "other"
+  severity    Int      // 1-10
+  notes       String?
+  createdAt   DateTime @default(now())
+}

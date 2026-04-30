@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 98%; /* warm white #FAF9F6 */
+    --foreground: 20 10% 15%; /* warm charcoal #2D2A26 */
+
+    --card: 40 20% 98%;
+    --card-foreground: 20 10% 15%;
+
+    --popover: 40 20% 98%;
+    --popover-foreground: 20 10% 15%;
+
+    --primary: 130 15% 55%; /* soft sage green #7B9B7E */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 20 35% 60%; /* muted terracotta #C4886B */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 30 8% 40%; /* warm gray #6B6660 */
+    --muted-foreground: 30 8% 40%;
+
+    --accent: 35 60% 57%; /* warm amber #D9954B */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 10 30% 48%; /* muted brick #9B5B4F */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 8% 85%;
+    --input: 30 8% 85%;
+    --ring: 130 15% 55%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+  }
+}
+
+/* Made with Bob */

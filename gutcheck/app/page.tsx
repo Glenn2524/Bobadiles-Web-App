@@ -56,7 +56,12 @@ export default function HomePage() {
   }
 
   const handleOnboarding = async () => {
-    if (!nameInput.trim()) return
+    if (!nameInput.trim()) {
+      alert('Please enter your name')
+      return
+    }
+
+    console.log('Starting onboarding with name:', nameInput.trim())
 
     try {
       const response = await fetch('/api/user', {
@@ -65,16 +70,24 @@ export default function HomePage() {
         body: JSON.stringify({ name: nameInput.trim() })
       })
 
+      console.log('Response status:', response.status)
+
       if (response.ok) {
         const newUser = await response.json()
+        console.log('New user created:', newUser)
         localStorage.setItem('gutcheck_user_name', newUser.name)
         localStorage.setItem('gutcheck_user_id', newUser.id)
         setUserName(newUser.name)
         setUser(newUser)
         loadDashboardData(newUser.id)
+      } else {
+        const errorData = await response.json()
+        console.error('Error response:', errorData)
+        alert(`Failed to create user: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error creating user:', error)
+      alert('Failed to create user. Please check the console for details.')
     }
   }
 

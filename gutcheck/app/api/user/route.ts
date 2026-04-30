@@ -12,11 +12,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const user = await prisma.user.create({
-      data: {
-        name: name.trim(),
-      },
+    const trimmedName = name.trim()
+
+    // Check if user with this name already exists (case-insensitive)
+    let user = await prisma.user.findFirst({
+      where: {
+        name: trimmedName
+      }
     })
+
+    // If user doesn't exist, create a new one
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name: trimmedName,
+        },
+      })
+    }
 
     return NextResponse.json(user)
   } catch (error) {

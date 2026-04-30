@@ -57,6 +57,7 @@ export default function CheckInPage() {
   // Optional fields
   const [unloggedSymptoms, setUnloggedSymptoms] = useState(false)
   const [unloggedSeverity, setUnloggedSeverity] = useState(5)
+  const [symptomOnsetTime, setSymptomOnsetTime] = useState('')
   const [notes, setNotes] = useState('')
 
   useEffect(() => {
@@ -89,6 +90,7 @@ export default function CheckInPage() {
           pain,
           unloggedSymptomsToday: unloggedSymptoms,
           unloggedSeverity: unloggedSymptoms ? unloggedSeverity : null,
+          symptomOnsetTime: symptomOnsetTime || null,
           notes: notes || null
         })
       })
@@ -376,19 +378,35 @@ export default function CheckInPage() {
             </div>
 
             {unloggedSymptoms && (
-              <div className="space-y-2 pl-6">
-                <div className="flex justify-between">
-                  <Label>How severe were they?</Label>
-                  <span className="text-sm font-medium">{unloggedSeverity}/10</span>
+              <div className="space-y-4 pl-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Label>How severe were they?</Label>
+                    <span className="text-sm font-medium">{unloggedSeverity}/10</span>
+                  </div>
+                  <Slider
+                    value={[unloggedSeverity]}
+                    onValueChange={(value) => setUnloggedSeverity(value[0])}
+                    min={1}
+                    max={10}
+                    step={1}
+                    className="w-full"
+                  />
                 </div>
-                <Slider
-                  value={[unloggedSeverity]}
-                  onValueChange={(value) => setUnloggedSeverity(value[0])}
-                  min={1}
-                  max={10}
-                  step={1}
-                  className="w-full"
-                />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="symptomTime">When did symptoms start? (Optional)</Label>
+                  <Input
+                    id="symptomTime"
+                    type="time"
+                    value={symptomOnsetTime}
+                    onChange={(e) => setSymptomOnsetTime(e.target.value)}
+                    className="w-full"
+                  />
+                  <p className="text-xs text-gray-500">
+                    💡 Helps us identify which foods triggered symptoms based on timing
+                  </p>
+                </div>
               </div>
             )}
           </CardContent>

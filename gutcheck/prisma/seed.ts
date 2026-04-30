@@ -24,15 +24,15 @@ async function main() {
   const acuteSymptoms = []
   const bowelMovements = []
 
-  // Generate 14 days of data
-  for (let dayOffset = 13; dayOffset >= 0; dayOffset--) {
+  // Generate 30 days of data
+  for (let dayOffset = 29; dayOffset >= 0; dayOffset--) {
     const date = new Date(now)
     date.setDate(date.getDate() - dayOffset)
     date.setHours(0, 0, 0, 0)
 
     // Determine if this is a "dairy day" or "wheat day" for correlation
-    const isDairyDay = [1, 3, 5, 7, 9, 11, 13].includes(dayOffset)
-    const isWheatDay = [0, 2, 4, 6, 8, 10, 12, 13].includes(dayOffset)
+    const isDairyDay = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29].includes(dayOffset)
+    const isWheatDay = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28].includes(dayOffset)
     const shouldHaveSymptoms = (isDairyDay && dayOffset !== 1) || (isWheatDay && dayOffset !== 0)
 
     // Breakfast (8am)
@@ -179,7 +179,7 @@ async function main() {
     })
 
     // Morning check-in for some days (7am)
-    if ([3, 7, 11].includes(dayOffset)) {
+    if ([3, 7, 11, 15, 19, 23, 27].includes(dayOffset)) {
       const morningCheckInTime = new Date(date)
       morningCheckInTime.setHours(7, 0, 0, 0)
 
@@ -201,7 +201,7 @@ async function main() {
     }
 
     // Acute symptoms on dairy/wheat heavy days
-    if ([4, 8].includes(dayOffset)) {
+    if ([4, 8, 12, 16, 20, 24, 28].includes(dayOffset)) {
       const acuteTime = new Date(date)
       acuteTime.setHours(14 + Math.floor(Math.random() * 4), Math.floor(Math.random() * 60), 0, 0)
 
@@ -215,7 +215,7 @@ async function main() {
     }
 
     // Bowel movements (most days)
-    if (dayOffset !== 2 && dayOffset !== 6) {
+    if (dayOffset !== 2 && dayOffset !== 6 && dayOffset !== 14 && dayOffset !== 22) {
       const bmTime = new Date(date)
       bmTime.setHours(9 + Math.floor(Math.random() * 8), Math.floor(Math.random() * 60), 0, 0)
 

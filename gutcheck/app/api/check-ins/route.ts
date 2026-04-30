@@ -33,10 +33,12 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(checkIn)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to create check-in:', error)
+    console.error('Error details:', error.message)
+    console.error('Error stack:', error.stack)
     return NextResponse.json(
-      { error: 'Failed to create check-in' },
+      { error: 'Failed to create check-in', details: error.message },
       { status: 500 }
     )
   }

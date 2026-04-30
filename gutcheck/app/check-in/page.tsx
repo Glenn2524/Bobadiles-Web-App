@@ -94,7 +94,9 @@ export default function CheckInPage() {
       })
 
       if (!checkInResponse.ok) {
-        throw new Error('Failed to submit check-in')
+        const errorData = await checkInResponse.json()
+        console.error('API Error Response:', errorData)
+        throw new Error(errorData.details || errorData.error || 'Failed to submit check-in')
       }
 
       // Submit bowel movement if Bristol scale selected
@@ -118,9 +120,10 @@ export default function CheckInPage() {
       setTimeout(() => {
         router.push('/')
       }, 1500)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting check-in:', error)
-      alert('Failed to submit check-in. Please try again.')
+      const errorMessage = error.message || 'Failed to submit check-in. Please try again.'
+      alert(`Error: ${errorMessage}`)
     } finally {
       setLoading(false)
     }

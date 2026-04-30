@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Parse JSON fields for easier consumption
-    const parsedMeals = meals.map(meal => ({
+    const parsedMeals = meals.map((meal: any) => ({
       ...meal,
       ingredients: JSON.parse(meal.ingredients),
       irritantTags: JSON.parse(meal.irritantTags)

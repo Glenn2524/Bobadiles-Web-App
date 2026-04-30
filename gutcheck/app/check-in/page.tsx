@@ -19,12 +19,22 @@ const bristolTypes = [
 ]
 
 // Helper function to get slider color based on value
+// For positive metrics (wellbeing, energy): red -> green
 const getSliderColor = (value: number, max: number = 10) => {
   const percentage = (value / max) * 100
   if (percentage <= 25) return 'bg-red-500'
   if (percentage <= 50) return 'bg-orange-500'
   if (percentage <= 75) return 'bg-yellow-500'
   return 'bg-green-500'
+}
+
+// For negative metrics (stress, pain, bloating, constipation): green -> red
+const getInverseSliderColor = (value: number, max: number = 10) => {
+  const percentage = (value / max) * 100
+  if (percentage <= 25) return 'bg-green-500'
+  if (percentage <= 50) return 'bg-yellow-500'
+  if (percentage <= 75) return 'bg-orange-500'
+  return 'bg-red-500'
 }
 
 export default function CheckInPage() {
@@ -37,6 +47,7 @@ export default function CheckInPage() {
   const [wellbeing, setWellbeing] = useState(5)
   const [energy, setEnergy] = useState(5)
   const [stress, setStress] = useState(5)
+  const [constipation, setConstipation] = useState(0)
   const [bloating, setBloating] = useState(0)
   const [pain, setPain] = useState(0)
 
@@ -73,6 +84,7 @@ export default function CheckInPage() {
           wellbeing,
           energy,
           stress,
+          constipation,
           bloating,
           pain,
           unloggedSymptomsToday: unloggedSymptoms,
@@ -191,7 +203,7 @@ export default function CheckInPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <Label>Stress Level</Label>
-                <span className={`text-sm font-bold px-2 py-1 rounded ${getSliderColor(stress)} text-white`}>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getInverseSliderColor(stress)} text-white`}>
                   {stress}/10
                 </span>
               </div>
@@ -214,8 +226,32 @@ export default function CheckInPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
+                <Label>Constipation</Label>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getInverseSliderColor(constipation)} text-white`}>
+                  {constipation}/10
+                </span>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 h-2 rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500 opacity-30" />
+                <Slider
+                  value={[constipation]}
+                  onValueChange={(value) => setConstipation(value[0])}
+                  min={0}
+                  max={10}
+                  step={1}
+                  className="relative"
+                />
+              </div>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>None</span>
+                <span>🚫 Severe</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
                 <Label>Bloating</Label>
-                <span className={`text-sm font-bold px-2 py-1 rounded ${getSliderColor(bloating)} text-white`}>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getInverseSliderColor(bloating)} text-white`}>
                   {bloating}/10
                 </span>
               </div>
@@ -239,7 +275,7 @@ export default function CheckInPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <Label>Pain</Label>
-                <span className={`text-sm font-bold px-2 py-1 rounded ${getSliderColor(pain)} text-white`}>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getInverseSliderColor(pain)} text-white`}>
                   {pain}/10
                 </span>
               </div>

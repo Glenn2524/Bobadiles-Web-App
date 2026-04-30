@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
         wellbeing: data.wellbeing,
         energy: data.energy,
         stress: data.stress,
+        constipation: data.constipation || 0,
         bloating: data.bloating,
         pain: data.pain,
         sleepQuality: data.sleepQuality || null,

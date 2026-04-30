@@ -6,16 +6,26 @@ import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const bristolTypes = [
-  { scale: 1, label: 'Hard pellets', color: 'bg-stone-700' },
-  { scale: 2, label: 'Lumpy log', color: 'bg-stone-600' },
-  { scale: 3, label: 'Cracked log', color: 'bg-stone-500' },
-  { scale: 4, label: 'Smooth log', color: 'bg-stone-400' },
-  { scale: 5, label: 'Soft blobs', color: 'bg-amber-400' },
-  { scale: 6, label: 'Mushy', color: 'bg-amber-500' },
-  { scale: 7, label: 'Liquid', color: 'bg-amber-600' }
+  { scale: 1, label: 'Hard pellets', emoji: '🔴', description: 'Separate hard lumps, like nuts (hard to pass)' },
+  { scale: 2, label: 'Lumpy log', emoji: '🟤', description: 'Sausage-shaped but lumpy' },
+  { scale: 3, label: 'Cracked log', emoji: '🌰', description: 'Like a sausage but with cracks on surface' },
+  { scale: 4, label: 'Smooth log', emoji: '🥖', description: 'Like a sausage or snake, smooth and soft (ideal)' },
+  { scale: 5, label: 'Soft blobs', emoji: '🟡', description: 'Soft blobs with clear-cut edges' },
+  { scale: 6, label: 'Mushy', emoji: '🟠', description: 'Fluffy pieces with ragged edges, mushy' },
+  { scale: 7, label: 'Liquid', emoji: '💧', description: 'Watery, no solid pieces, entirely liquid' }
 ]
+
+// Helper function to get slider color based on value
+const getSliderColor = (value: number, max: number = 10) => {
+  const percentage = (value / max) * 100
+  if (percentage <= 25) return 'bg-red-500'
+  if (percentage <= 50) return 'bg-orange-500'
+  if (percentage <= 75) return 'bg-yellow-500'
+  return 'bg-green-500'
+}
 
 export default function CheckInPage() {
   const router = useRouter()
@@ -131,97 +141,122 @@ export default function CheckInPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <Label>Overall Wellbeing</Label>
-                <span className="text-sm font-medium">{wellbeing}/10</span>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getSliderColor(wellbeing)} text-white`}>
+                  {wellbeing}/10
+                </span>
               </div>
-              <Slider
-                value={[wellbeing]}
-                onValueChange={(value) => setWellbeing(value[0])}
-                min={1}
-                max={10}
-                step={1}
-                className="w-full"
-              />
+              <div className="relative">
+                <div className="absolute inset-0 h-2 rounded-full bg-gradient-to-r from-red-500 via-orange-500 via-yellow-500 to-green-500 opacity-30" />
+                <Slider
+                  value={[wellbeing]}
+                  onValueChange={(value) => setWellbeing(value[0])}
+                  min={1}
+                  max={10}
+                  step={1}
+                  className="relative"
+                />
+              </div>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>Poor</span>
-                <span>Excellent</span>
+                <span>😢 Poor</span>
+                <span>😊 Excellent</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <Label>Energy Level</Label>
-                <span className="text-sm font-medium">{energy}/10</span>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getSliderColor(energy)} text-white`}>
+                  {energy}/10
+                </span>
               </div>
-              <Slider
-                value={[energy]}
-                onValueChange={(value) => setEnergy(value[0])}
-                min={1}
-                max={10}
-                step={1}
-                className="w-full"
-              />
+              <div className="relative">
+                <div className="absolute inset-0 h-2 rounded-full bg-gradient-to-r from-red-500 via-orange-500 via-yellow-500 to-green-500 opacity-30" />
+                <Slider
+                  value={[energy]}
+                  onValueChange={(value) => setEnergy(value[0])}
+                  min={1}
+                  max={10}
+                  step={1}
+                  className="relative"
+                />
+              </div>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>Exhausted</span>
-                <span>Energized</span>
+                <span>😴 Exhausted</span>
+                <span>⚡ Energized</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <Label>Stress Level</Label>
-                <span className="text-sm font-medium">{stress}/10</span>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getSliderColor(stress)} text-white`}>
+                  {stress}/10
+                </span>
               </div>
-              <Slider
-                value={[stress]}
-                onValueChange={(value) => setStress(value[0])}
-                min={1}
-                max={10}
-                step={1}
-                className="w-full"
-              />
+              <div className="relative">
+                <div className="absolute inset-0 h-2 rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500 opacity-30" />
+                <Slider
+                  value={[stress]}
+                  onValueChange={(value) => setStress(value[0])}
+                  min={1}
+                  max={10}
+                  step={1}
+                  className="relative"
+                />
+              </div>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>Calm</span>
-                <span>Very Stressed</span>
+                <span>😌 Calm</span>
+                <span>😰 Very Stressed</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <Label>Bloating</Label>
-                <span className="text-sm font-medium">{bloating}/10</span>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getSliderColor(bloating)} text-white`}>
+                  {bloating}/10
+                </span>
               </div>
-              <Slider
-                value={[bloating]}
-                onValueChange={(value) => setBloating(value[0])}
-                min={0}
-                max={10}
-                step={1}
-                className="w-full"
-              />
+              <div className="relative">
+                <div className="absolute inset-0 h-2 rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500 opacity-30" />
+                <Slider
+                  value={[bloating]}
+                  onValueChange={(value) => setBloating(value[0])}
+                  min={0}
+                  max={10}
+                  step={1}
+                  className="relative"
+                />
+              </div>
               <div className="flex justify-between text-xs text-gray-500">
                 <span>None</span>
-                <span>Severe</span>
+                <span>🎈 Severe</span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <Label>Pain</Label>
-                <span className="text-sm font-medium">{pain}/10</span>
+                <span className={`text-sm font-bold px-2 py-1 rounded ${getSliderColor(pain)} text-white`}>
+                  {pain}/10
+                </span>
               </div>
-              <Slider
-                value={[pain]}
-                onValueChange={(value) => setPain(value[0])}
-                min={0}
-                max={10}
-                step={1}
-                className="w-full"
-              />
+              <div className="relative">
+                <div className="absolute inset-0 h-2 rounded-full bg-gradient-to-r from-green-500 via-yellow-500 via-orange-500 to-red-500 opacity-30" />
+                <Slider
+                  value={[pain]}
+                  onValueChange={(value) => setPain(value[0])}
+                  min={0}
+                  max={10}
+                  step={1}
+                  className="relative"
+                />
+              </div>
               <div className="flex justify-between text-xs text-gray-500">
                 <span>None</span>
-                <span>Severe</span>
+                <span>⚡ Severe</span>
               </div>
             </div>
           </CardContent>
@@ -230,8 +265,26 @@ export default function CheckInPage() {
         {/* Bristol Stool Scale */}
         <Card>
           <CardHeader>
-            <CardTitle>Bowel Movement Today? (Optional)</CardTitle>
-            <p className="text-sm text-gray-600">Select the Bristol Stool Scale type</p>
+            <div className="flex items-center gap-2">
+              <CardTitle>Bowel Movement Today? (Optional)</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 text-xs font-bold">
+                      i
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="font-semibold mb-1">Bristol Stool Scale</p>
+                    <p className="text-xs">
+                      A medical tool to classify stool consistency. Types 3-4 are considered ideal.
+                      This helps track digestive health patterns.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <p className="text-sm text-gray-600">Select the type that matches your bowel movement</p>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-2">
@@ -239,14 +292,14 @@ export default function CheckInPage() {
                 <Button
                   key={type.scale}
                   variant={bristolScale === type.scale ? 'default' : 'outline'}
-                  className="justify-start h-auto py-3"
+                  className="justify-start h-auto py-4"
                   onClick={() => setBristolScale(type.scale)}
                 >
                   <div className="flex items-center gap-3 w-full">
-                    <div className={`w-8 h-8 rounded ${type.color}`} />
-                    <div className="text-left">
-                      <div className="font-medium">Type {type.scale}</div>
-                      <div className="text-sm opacity-80">{type.label}</div>
+                    <div className="text-3xl">{type.emoji}</div>
+                    <div className="text-left flex-1">
+                      <div className="font-medium">Type {type.scale}: {type.label}</div>
+                      <div className="text-xs opacity-70 mt-0.5">{type.description}</div>
                     </div>
                   </div>
                 </Button>
@@ -255,7 +308,7 @@ export default function CheckInPage() {
                 <Button
                   variant="ghost"
                   onClick={() => setBristolScale(null)}
-                  className="text-sm"
+                  className="text-sm mt-2"
                 >
                   Clear selection
                 </Button>

@@ -47,6 +47,7 @@ model CheckIn {
   wellbeing               Int      // 1-10
   energy                  Int      // 1-10
   stress                  Int      // 1-10
+  constipation            Int      @default(0) // 0-10
   bloating                Int      // 0-10
   pain                    Int      // 0-10
   sleepQuality            Int?     // 1-5 (morning only)

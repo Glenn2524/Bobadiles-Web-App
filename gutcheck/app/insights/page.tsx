@@ -122,7 +122,7 @@ export default function InsightsPage() {
             📊 Your Insights
           </h1>
           <p className="text-gray-600">
-            AI-powered pattern analysis from your gut health tracking
+            Statistical pattern analysis from your gut health tracking
           </p>
         </div>
 

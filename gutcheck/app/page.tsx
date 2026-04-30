@@ -6,13 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { 
-  Utensils, 
-  ClipboardList, 
-  TrendingUp, 
-  FileText, 
+import {
+  Utensils,
+  ClipboardList,
+  TrendingUp,
+  FileText,
   AlertCircle,
-  Calendar
+  Calendar,
+  LogOut,
+  Microscope
 } from 'lucide-react'
 
 export default function HomePage() {
@@ -91,6 +93,19 @@ export default function HomePage() {
     }
   }
 
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem('gutcheck_user_name')
+    localStorage.removeItem('gutcheck_user_id')
+    
+    // Reset state
+    setUserName(null)
+    setUser(null)
+    setProgress(null)
+    setObservations([])
+    setNameInput('')
+  }
+
   // Onboarding screen
   if (!userName && !loading) {
     return (
@@ -117,14 +132,17 @@ export default function HomePage() {
                 onChange={(e) => setNameInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleOnboarding()}
               />
+              <p className="text-xs text-muted-foreground">
+                Enter your name to log in or create a new account
+              </p>
             </div>
 
-            <Button 
-              onClick={handleOnboarding} 
+            <Button
+              onClick={handleOnboarding}
               className="w-full"
               disabled={!nameInput.trim()}
             >
-              Get Started
+              Log In / Sign Up
             </Button>
 
             <p className="text-xs text-muted-foreground text-center">
@@ -165,15 +183,26 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground">{today}</p>
           </div>
           
-          {/* Acute Symptom Button - Always visible */}
-          <Button 
-            variant="default"
-            className="bg-accent hover:bg-accent/90"
-            onClick={() => router.push('/acute-symptom')}
-          >
-            <AlertCircle className="mr-2 h-4 w-4" />
-            Acute Symptom
-          </Button>
+          <div className="flex gap-2">
+            {/* Acute Symptom Button */}
+            <Button
+              variant="default"
+              className="bg-accent hover:bg-accent/90"
+              onClick={() => router.push('/acute-symptom')}
+            >
+              <AlertCircle className="mr-2 h-4 w-4" />
+              Acute Symptom
+            </Button>
+            
+            {/* Logout Button */}
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              title="Log out"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -275,7 +304,7 @@ export default function HomePage() {
             </CardHeader>
           </Card>
 
-          <Card 
+          <Card
             className="cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => router.push('/report')}
           >
@@ -285,6 +314,35 @@ export default function HomePage() {
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
                 <CardTitle className="text-lg">My Report</CardTitle>
+              </div>
+            </CardHeader>
+          </Card>
+
+          <Card
+            className={`cursor-pointer transition-shadow ${
+              progress?.insightsAvailable
+                ? 'hover:shadow-md border-purple-200'
+                : 'opacity-50 cursor-not-allowed'
+            }`}
+            onClick={() => progress?.insightsAvailable && router.push('/intolerance-insights')}
+          >
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-purple-100">
+                  <Microscope className="h-6 w-6 text-purple-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Intolerance Insights</CardTitle>
+                  {!progress?.insightsAvailable ? (
+                    <CardDescription className="text-xs mt-1">
+                      Available after 7 days of tracking
+                    </CardDescription>
+                  ) : (
+                    <CardDescription className="text-xs mt-1">
+                      AI-powered food trigger analysis
+                    </CardDescription>
+                  )}
+                </div>
               </div>
             </CardHeader>
           </Card>

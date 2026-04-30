@@ -13,6 +13,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Parse symptom onset time if provided
+    let symptomOnsetTime = null
+    if (data.symptomOnsetTime) {
+      const today = new Date()
+      const [hours, minutes] = data.symptomOnsetTime.split(':')
+      symptomOnsetTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), parseInt(hours), parseInt(minutes))
+    }
+
     const checkIn = await prisma.checkIn.create({
       data: {
         userId: data.userId,
@@ -28,6 +36,7 @@ export async function POST(request: NextRequest) {
         unloggedSymptomsToday: data.unloggedSymptomsToday || false,
         unloggedSeverity: data.unloggedSeverity || null,
         unloggedNotes: data.unloggedNotes || null,
+        symptomOnsetTime: symptomOnsetTime,
         notes: data.notes || null
       }
     })

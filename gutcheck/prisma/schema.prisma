@@ -55,6 +55,8 @@ model CheckIn {
   unloggedSymptomsToday   Boolean  @default(false)
   unloggedSeverity        Int?     // 1-10 if unloggedSymptomsToday is true
   unloggedNotes           String?
+  // New: Track when symptoms occurred for time-window analysis
+  symptomOnsetTime        DateTime? // When symptoms started (if user remembers)
   notes                   String?
   createdAt               DateTime @default(now())
 }
